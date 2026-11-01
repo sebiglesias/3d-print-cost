@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Print Cost Calculator & Pricing Estimator | Commercial Quote Generator</title>
+  <meta name="description" content="Calculate exact production cost and selling price for 3D prints (PLA, PETG, ABS, Resin). Accounts for filament weight, electricity, machine wear, labor, and profit margins for Etsy and client quotes.">
+  <meta name="keywords" content="3d print cost calculator, 3d printing pricing calculator, how much to charge for 3d print, filament cost per gram, 3d printing profit margin etsy">
+  <link rel="canonical" href="https://sebiglesias.com.ar/3d-print-cost/">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0B0F17">
+  <link rel="apple-touch-icon" href="icon.svg">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="3D Print Cost Calculator & Pricing Estimator">
+  <meta property="og:description" content="Calculate exact filament, electricity, machine wear, and Etsy profit margins for your 3D prints.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sebiglesias.com.ar/3d-print-cost/">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="3D Print Cost Calculator">
+  <meta name="twitter:description" content="Commercial pricing and quoting tool for 3D printer owners.">
+
+  <!-- Google tag (gtag.js) GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2BNDBQP0W7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2BNDBQP0W7');
+  </script>
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-3381238987477190">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3381238987477190" crossorigin="anonymous"></script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "3D Print Cost & Pricing Calculator",
+        "url": "https://sebiglesias.com.ar/3d-print-cost/",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "All",
+        "description": "Technical calculator to estimate manufacturing costs for FDM and SLA 3D printing (filament, electricity, depreciation, labor, and profit margins).",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How much should I charge for 3D printing?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The industry standard formula adds: 1) Material cost (grams used × cost per gram), 2) Electricity cost (print hours × kW × electricity rate), 3) Machine depreciation ($0.30 to $0.60 per print hour), 4) Post-processing labor, and 5) A failure buffer (5–10%). To this base cost, add a 50% to 150% profit margin depending on complexity and market."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much electricity does a 3D printer use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A typical FDM 3D printer (such as a Bambu Lab X1/P1 or Ender 3) averages between 100W and 150W of continuous power during printing. At the US average electric rate of $0.16/kWh, running a 10-hour print costs approximately $0.20 to $0.24 in electricity."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="backlink-bar">
+      <a href="https://sebiglesias.com.ar" class="backlink">← sebiglesias.com.ar</a>
+    </div>
+
+    <header class="header">
+      <div class="header-badge">🖨️ Maker & Fabrication Utility</div>
+      <h1>3D Print Cost Calculator<span class="accent">.</span></h1>
+      <p class="sub">Calculate filament, electricity, machine wear & quote prices</p>
+    </header>
+
+    <!-- Top Summary Hero Card -->
+    <section class="card hero-card">
+      <div class="hero-top">
+        <div class="hero-col">
+          <span class="hero-sublabel">Total Manufacturing Cost</span>
+          <div class="hero-val-wrap">
+            <span class="currency-symbol">$</span>
+            <span class="hero-number" id="base-cost-display">0.00</span>
+          </div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-col highlight">
+          <span class="hero-sublabel">Recommended Selling Price</span>
+          <div class="hero-val-wrap">
+            <span class="currency-symbol">$</span>
+            <span class="hero-number" id="quote-price-display">0.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="cost-breakdown-bar" id="breakdown-bar">
+        <!-- Dynamic colored segments -->
+      </div>
+      <div class="cost-legend" id="cost-legend">
+        <!-- Legend labels -->
+      </div>
+    </section>
+
+    <!-- Interactive Inputs Grid -->
+    <div class="inputs-grid">
+      <!-- Card 1: Material & Filament -->
+      <section class="card">
+        <h2>1. Filament / Resin Material</h2>
+        
+        <div class="field-group">
+          <label for="material-type">Material Preset</label>
+          <select id="material-type">
+            <option value="20" selected>PLA ($20 / kg spool)</option>
+            <option value="22">PETG ($22 / kg spool)</option>
+            <option value="26">ABS / ASA ($26 / kg spool)</option>
+            <option value="32">TPU Flexible ($32 / kg spool)</option>
+            <option value="45">Carbon Fiber PLA/Nylon ($45 / kg spool)</option>
+            <option value="35">Standard UV Resin ($35 / Liter)</option>
+            <option value="custom">Custom Price...</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="part-weight">Part Weight (Grams)</label>
+            <input type="number" id="part-weight" value="65" min="1" step="1">
+            <span class="hint">Includes supports & brim</span>
+          </div>
+          <div class="field-group">
+            <label for="spool-cost">Spool Cost ($ USD)</label>
+            <input type="number" id="spool-cost" value="20" min="5" step="0.5">
+            <span class="hint">Standard 1000g spool</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 2: Print Time & Electricity -->
+      <section class="card">
+        <h2>2. Print Time & Electricity</h2>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="print-hours">Print Hours</label>
+            <input type="number" id="print-hours" value="4" min="0" step="1">
+          </div>
+          <div class="field-group">
+            <label for="print-minutes">Minutes</label>
+            <input type="number" id="print-minutes" value="30" min="0" max="59" step="1">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="power-watts">Printer Power (Watts)</label>
+            <input type="number" id="power-watts" value="120" min="30" max="600" step="10">
+            <span class="hint">Avg 120W (Bambu / Ender)</span>
+          </div>
+          <div class="field-group">
+            <label for="kwh-rate">Electricity Rate ($/kWh)</label>
+            <input type="number" id="kwh-rate" value="0.16" min="0.05" max="1.0" step="0.01">
+            <span class="hint">US avg ~$0.16/kWh</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 3: Machine Wear & Post-Processing -->
+      <section class="card">
+        <h2>3. Machine Wear & Labor</h2>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="machine-deprec">Machine Depreciation ($/hr)</label>
+            <input type="number" id="machine-deprec" value="0.40" min="0" step="0.05">
+            <span class="hint">Maintenance, nozzles, belts</span>
+          </div>
+          <div class="field-group">
+            <label for="failure-risk">Failure Risk Buffer</label>
+            <select id="failure-risk">
+              <option value="0.05" selected>5% (Reliable setup)</option>
+              <option value="0.10">10% (Complex tall print)</option>
+              <option value="0.15">15% (Experimental PETG/ABS)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="labor-mins">Post-Processing (Mins)</label>
+            <input type="number" id="labor-mins" value="10" min="0" step="5">
+            <span class="hint">Support removal, sanding</span>
+          </div>
+          <div class="field-group">
+            <label for="labor-rate">Hourly Labor Rate ($/hr)</label>
+            <input type="number" id="labor-rate" value="20" min="0" step="5">
+            <span class="hint">Your time value</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 4: Profit Margin & Quote -->
+      <section class="card">
+        <h2>4. Pricing & Profit Margin</h2>
+
+        <div class="field-group">
+          <label>Target Profit Margin</label>
+          <div class="segmented-control" role="group" id="markup-control">
+            <button type="button" class="seg-btn" data-margin="0.25">25% (Hobby)</button>
+            <button type="button" class="seg-btn active" data-margin="0.50">50% (Standard)</button>
+            <button type="button" class="seg-btn" data-margin="1.00">100% (Etsy/Commercial)</button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-share" id="btn-copy-quote">
+          <span>📋</span> Copy Detailed Quote Summary
+        </button>
+      </section>
+    </div>
+
+    <!-- AdSense Responsive Placement -->
+    <div class="adsense-wrap" style="text-align: center; margin: 2rem 0;">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-3381238987477190"
+           data-ad-slot="auto"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>
+
+    <!-- FAQ Section -->
+    <section class="card faq-section">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h3>How do I calculate the weight of my 3D print?</h3>
+        <p>Slice your 3D model in your slicer software (Bambu Studio, Cura, or PrusaSlicer). The slicer will report the estimated filament weight in grams (g), including infill, perimeters, and supports.</p>
+      </div>
+      <div class="faq-item">
+        <h3>What is machine depreciation in 3D printing?</h3>
+        <p>A $600 3D printer typically has a productive lifespan of 1,500 to 2,000 printing hours before major overhaul. Allocating $0.30 to $0.50 per hour covers nozzle replacements, grease, PTFE tubes, and long-term hardware replacement.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>Part of the <a href="https://sebiglesias.com.ar">sebiglesias.com.ar</a> utility tools suite.</p>
+      <p class="copy">Free 3D printing utility · Open calculations</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
