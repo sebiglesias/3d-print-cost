@@ -7,6 +7,17 @@
   <meta name="description" content="Calculate exact production cost and selling price for 3D prints (PLA, PETG, ABS, Resin). Accounts for filament weight, electricity, machine wear, labor, and profit margins for Etsy and client quotes.">
   <meta name="keywords" content="3d print cost calculator, 3d printing pricing calculator, how much to charge for 3d print, filament cost per gram, 3d printing profit margin etsy">
   <link rel="canonical" href="https://sebiglesias.com.ar/3d-print-cost/">
+  <link rel="alternate" hreflang="en" href="https://sebiglesias.com.ar/3d-print-cost/">
+  <link rel="alternate" hreflang="es" href="https://sebiglesias.com.ar/3d-print-cost/?lang=es">
+  <link rel="alternate" hreflang="de" href="https://sebiglesias.com.ar/3d-print-cost/?lang=de">
+  <link rel="alternate" hreflang="fr" href="https://sebiglesias.com.ar/3d-print-cost/?lang=fr">
+  <link rel="alternate" hreflang="it" href="https://sebiglesias.com.ar/3d-print-cost/?lang=it">
+  <link rel="alternate" hreflang="pt" href="https://sebiglesias.com.ar/3d-print-cost/?lang=pt">
+  <link rel="alternate" hreflang="nl" href="https://sebiglesias.com.ar/3d-print-cost/?lang=nl">
+  <link rel="alternate" hreflang="sv" href="https://sebiglesias.com.ar/3d-print-cost/?lang=sv">
+  <link rel="alternate" hreflang="da" href="https://sebiglesias.com.ar/3d-print-cost/?lang=da">
+  <link rel="alternate" hreflang="pl" href="https://sebiglesias.com.ar/3d-print-cost/?lang=pl">
+  <link rel="alternate" hreflang="x-default" href="https://sebiglesias.com.ar/3d-print-cost/">
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -88,8 +99,20 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="backlink-bar">
+    <div class="backlink-bar" style="display:flex;align-items:center;justify-content:space-between">
       <a href="https://sebiglesias.com.ar" class="backlink">← sebiglesias.com.ar</a>
+      <select id="lang-select" aria-label="Language" style="background:#24221C;border:1px solid rgba(242,239,230,.18);color:#F2EFE6;font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:3px 6px;border-radius:3px;cursor:pointer;margin-left:auto">
+  <option value="en">🇺🇸 EN</option>
+  <option value="es">🇪🇸 ES</option>
+  <option value="de">🇩🇪 DE</option>
+  <option value="fr">🇫🇷 FR</option>
+  <option value="it">🇮🇹 IT</option>
+  <option value="pt">🇵🇹 PT</option>
+  <option value="nl">🇳🇱 NL</option>
+  <option value="sv">🇸🇪 SV</option>
+  <option value="da">🇩🇰 DA</option>
+  <option value="pl">🇵🇱 PL</option>
+</select>
     </div>
 
     <header class="header">
@@ -328,5 +351,41 @@
   </div>
 
   <script src="app.js"></script>
+
+<script>
+/* I18N_AUTO_ENGINE */
+(function(){
+  const DICT = {"en": {"title": "3D Print Cost Calculator<span class='accent'>.</span>", "sub": "Filament weight, kWh electricity, printer depreciation & Etsy markup"}, "es": {"title": "Calculadora Costo Impresión 3D<span class='accent'>.</span>", "sub": "Gramos de filamento, luz kWh, amortización y precio de venta"}, "de": {"title": "3D-Druck Kostenrechner<span class='accent'>.</span>", "sub": "Filamentgewicht, Stromkosten kWh, Verschleiß & Verkaufspreis"}, "fr": {"title": "Calculateur Coût Impression 3D<span class='accent'>.</span>", "sub": "Poids filament, électricité kWh, amortissement et marge"}, "it": {"title": "Calcolatore Costo Stampa 3D<span class='accent'>.</span>", "sub": "Grammi filamento, energia kWh, ammortamento e prezzo vendita"}, "pt": {"title": "Calculadora Custo Impressão 3D<span class='accent'>.</span>", "sub": "Gramas de filamento, energia kWh, depreciação e lucro"}, "nl": {"title": "3D-Print Kostencalculator<span class='accent'>.</span>", "sub": "Filament grammen, stroom kWh, afschrijving & verkoopprijs"}, "sv": {"title": "3D-Utskrift Kostnadskalkylator<span class='accent'>.</span>", "sub": "Filamentvikt, elpris kWh, avskrivning och marginal"}, "da": {"title": "3D-Print Prisberegner<span class='accent'>.</span>", "sub": "Filamentvægt, strøm kWh, afskrivning og salgspris"}, "pl": {"title": "Kalkulator Kosztów Druku 3D<span class='accent'>.</span>", "sub": "Waga filamentu, prąd kWh, amortyzacja i marża"}};
+  const h1El = document.querySelector('h1');
+  const subEl = document.querySelector('.sub') || document.querySelector('header p');
+  const selEl = document.getElementById('lang-select');
+  function applyLang(lang) {
+    const entry = DICT[lang] || DICT.en;
+    document.documentElement.lang = lang;
+    if (h1El && entry.title) h1El.innerHTML = entry.title;
+    if (subEl && entry.sub) subEl.textContent = entry.sub;
+    if (lang !== 'en' && entry.sub) {
+      document.title = (h1El ? h1El.textContent : '') + ' — ' + entry.sub;
+    }
+  }
+  const params = new URLSearchParams(window.location.search);
+  const init = params.get('lang') || localStorage.getItem('3d-print-cost-lang') || 'en';
+  const valid = DICT[init] ? init : 'en';
+  if (selEl) {
+    selEl.value = valid;
+    selEl.addEventListener('change', function(e) {
+      const nl = e.target.value;
+      localStorage.setItem('3d-print-cost-lang', nl);
+      const u = new URL(window.location.href);
+      if (nl === 'en') u.searchParams.delete('lang');
+      else u.searchParams.set('lang', nl);
+      window.history.replaceState({}, '', u);
+      applyLang(nl);
+    });
+  }
+  applyLang(valid);
+})();
+</script>
+
 </body>
 </html>
